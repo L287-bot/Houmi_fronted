@@ -16,6 +16,7 @@
         </template>
       </van-card>
     </template>
+  <van-empty v-if="userList.length < 1 " description="暂无数据" />
 </template>
 
 <script setup>

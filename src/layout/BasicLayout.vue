@@ -38,11 +38,14 @@ const onClickRight = () =>{
 };
 
 const active = ref("index");
-const onChange = (index) => showToast(`标签 ${index}`);
+const onChange = (index) => showToast(` ${index}页`);
 
 </script>
 
 <style scoped>
+#content{
+  padding-bottom: 50px;
+}
 
 </style>
 
