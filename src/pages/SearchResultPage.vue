@@ -1,86 +1,78 @@
 <template>
-  <van-card
-      v-for="user in userList"
-      :desc="user.profile"
-      :title="`${user.username} `"
-      :thumb="user.avatarUrl"
-
-  >
-    <template #tags>
-      <van-tag plain type="danger" v-for="tag in tags" style="margin-right: 8px; margin-top: 8px" >
-        {{tag}}
-      </van-tag>
+    <template v-for="user in userList ">
+      <van-card
+          :desc="user.profile"
+          :title="user.username"
+          :thumb="user.avatarUrl"
+      >
+        <template #tags>
+          <van-tag plain type="danger" v-for="tag in user.tags" style="margin-right: 8px;margin-top: 8px;">
+            {{tag}}
+          </van-tag>
+        </template>
+        <template #footer >
+          <van-button  size="small">申请好友</van-button>
+          <van-button  size="small">举报</van-button>
+        </template>
+      </van-card>
     </template>
-    <template #footer>
-      <van-button size="mini">申请好友</van-button>
-      <van-button size="mini">举报</van-button>
-    </template>
-  </van-card>
-  <van-empty v-if="!userList || userList.length < 1" description="搜索结果为空" />
 </template>
 
-<script setup >
-import {onMounted, ref} from "vue";
+<script setup>
+
+
 import {useRoute} from "vue-router";
-import myAxios from "../plungin/myAxios.js"
-import {showFailToast, showSuccessToast, showToast, Toast} from "vant";
-import qs from 'qs'
+import qs from 'qs';
+import myAxios from "../plungin/myAxios";
+import {onMounted, ref} from "vue";
+import {showFailToast, showSuccessToast, Toast} from "vant";
 const route = useRoute();
+console.log(route)
 const {tags} = route.query;
-//假数据测试
-// const mockUser = ref(
-//     {
-//   id: 931,
-//   username: '我是小帅',
-//   userAccount: 'LSCEddie',
-//   profile: '爱国青年，知识分子',
-//   gender: 0,
-//   phone: '123456789101',
-//   email: 'shayu-yusha@qq.com',
-//   avatarUrl: 'https://img1.baidu.com/it/u=773642632,3691509095&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500',
-//   tags: ['java', 'emo', '打工中', 'emo', '打工中'],
+
+// const mockUser = {
+//   id: '1234',
+//   username: 'daoyMI',
+//   profile: '喜欢唱跳，rap,打篮球',
+//   userAccount: 'count123',
+//   avatarUrl: 'https://img.meituan.net/avatar/5b43cd6e79a6909eaa4a6f68ae009a9f107756.jpg',
+//   gender: '男',
+//   phone: '41234568556564',
+//   email: '45265456@163.com',
 //   createTime: new Date(),
+//   tags: ['唱','跳','rap','篮球']
 // }
-//
-// )
-
 const userList = ref([]);
-
-onMounted( async () =>{
-  // 为给定 ID 的 user 创建请求
-  const userListData = await  myAxios.get('/user/search/tags',{
-    withCredentials: false,
+onMounted(async () =>{
+  const userListData = await myAxios.get("/user/search/tags", {
     params: {
       tagNameList: tags
     },
-    //用鱼皮的这个我的头像不会显示。
-    // paramsSerializer: params =>{
-    //   return qs.stringify(params,{indices: false})
-    // }
-
-    //序列化
-    paramsSerializer: {
-      serialize: params => qs.stringify(params, { indices: false}),
+    paramsSerializer: params => {
+      return qs.stringify(params, {indices: false})
     }
+  }).then((res) => {
+    console.log(res);
+    showSuccessToast("请求成功");
+    return res?.data;
+  }).catch((err) => {
+    console.log(err)
+    showFailToast("请求失败");
   })
-      .then(function (response) {
-        console.log('/user/search/tags succeed',response);
-        showSuccessToast('请求成功');
-        return response.data?.data;
-      })
-      .catch(function (error) {
-        console.log('/user/search/tags error',error);
-        showFailToast('请求失败')
-      });
+  console.log(userListData)
   if (userListData){
-    userListData.forEach(user =>{
-      if (user.tags){
-        user.tags = JSON.parse(user.tags);
+    userListData.forEach(item =>{
+      if (item.tags){
+        item.tags = JSON.parse(item.tags);
       }
     })
-    userList.value = userListData.data;
+    userList.value = userListData;
   }
 })
+
+
+
+
 </script>
 
 <style scoped>

@@ -1,7 +1,7 @@
 /**
  * 前端收发用户类型
  */
-export  type userType={
+export  type CurrentUser={
     id:number;
     username:string;
     userAccount :string;
